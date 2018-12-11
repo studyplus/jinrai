@@ -9,3 +9,4 @@ spec/dummy/tmp/
 vendor/bundle
 Gemfile.lock
 .ruby_version
+.DS_Store
