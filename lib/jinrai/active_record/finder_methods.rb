@@ -6,6 +6,14 @@ module Jinrai::ActiveRecord
 
     included do
       include Jinrai::ConfigurationMethods
+
+      def to_cursor
+        cursor_format = self.class.default_cursor_format
+        attributes = cursor_format.map do |attribute|
+          self.send(attribute)
+        end
+        Base64.urlsafe_encode64(attributes.join("_"))
+      end
     end
 
     module ClassMethods
@@ -49,7 +57,7 @@ module Jinrai::ActiveRecord
         sort_at ||= primary_key
         if cursor
           attributes = HashWithIndifferentAccess.new(decode_cursor(cursor))
-          id = default_cursor_record_id_extractor.call(self, attributes)
+          id = find_by(attributes).id
 
           if sort_at != primary_key
             condition_1 = arel_table[sort_at].send(rank, attributes[sort_at])

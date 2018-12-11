@@ -8,13 +8,6 @@ RSpec.describe Jinrai::ActiveRecord::FinderMethods do
     end
   end
 
-  User.define_method(:to_cursor) do
-    cursor_format = self.class.default_cursor_format
-    attributes = cursor_format.map do |attribute|
-      self.send(attribute)
-    end
-    Base64.urlsafe_encode64(attributes.join("_"))
-  end
 
   describe ".cursor" do
     context "sorted at primary key" do

@@ -1,4 +1,4 @@
-module Jinrai
+module Jinrai::ActiveRecord
   module Result
     attr_writer :is_cursored
 
