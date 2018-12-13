@@ -12,7 +12,7 @@ module Jinrai::ActiveRecord
       encode_cursor(last)
     end
 
-    def per(num = nil, reverse: false)
+    def per(num = nil)
       num ||= default_cursor_per
       if (n = num.to_i).negative? || !(/^\d/ =~ num.to_s)
         self

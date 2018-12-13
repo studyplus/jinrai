@@ -1,6 +1,6 @@
 require 'jinrai/active_record/cursor_methods'
 
-module Jinrai::ActiveRecord
+module Jinrai::ActiveRecord #:nodoc:
   module FinderMethods
     extend ActiveSupport::Concern
 

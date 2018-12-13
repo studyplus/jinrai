@@ -1,5 +1,5 @@
 # Jinrai
-Jinrai is a awesome cursor type paginator
+Jinrai is a awesome cursor based paginator
 
 ## Usage
 ```ruby
@@ -25,38 +25,27 @@ User.cursor.count #=> 100
 User.cursor.since_format #=> generate cursor fomatted "#{user.name}_#{user.age}"
 ```
 
-By default, You can get 20 records collection which start with latest record; which have largest id.
 ```ruby
-User.count #=> 40
-User.cursor #=> [#<User:0x00007fa55d7a7c40
-#   id: 40,
-#   name: "user040",
-#   age: nil,
-#   created_at: Tue, 11 Dec 2018 12:29:35 UTC +00:00,
-#   updated_at: Tue, 11 Dec 2018 12:29:35 UTC +00:00>,
-#  #<User:0x00007fa55d7a7b00
-#   id: 39,
-#   name: "user039",
+User.cursor #=> get latest 20 records.
 User.cursor.count #=> 20
 ```
 
 `.cursor` has two arguments, `till` and `since`, and by passing them we can get record collection of arbitrary interval.
 ```ruby
 since_cursor = User.cursor.till_cursor
-User.cursor(since: since_cursor)
-#=> [#<User:0x00007fa55dcb90f8
-#   id: 20,
-#   name: "user020",
-#   age: nil,
-#   created_at: Tue, 11 Dec 2018 12:29:35 UTC +00:00,
-#   updated_at: Tue, 11 Dec 2018 12:29:35 UTC +00:00>,
-#  #<User:0x00007fa55dcb8fb8
-#   id: 19,
-#   name: "user019",
+User.cursor(since: since_cursor) # return records older than the record pointed by the cursor
 
-till_cursor = User.cursor(since: since_cursor).since_cursor
-User.cursor(till: till_cursor)
-# =>
+till_cursor = User.cursor.since_cursor
+User.cursor(till: till_cursor) # return records newer than the record pointed by the cursor
+
+User.cursor(since: since_cursor, till: till_cursor) # return records newer than the record pointed by the since cursor and older than the record pointed by the till cursor.
+```
+
+Get cursor by calling `since_cursor` or `till_cursor`.
+```ruby
+users = User.cursor
+users.since_cursor # this cursor points first record of User collection
+users.till_cursor # this cursor points last record of User collection
 ```
 
 ## Installation

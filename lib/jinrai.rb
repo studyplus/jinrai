@@ -1,6 +1,5 @@
 # frozen_string_literal:true
 
-require 'jinrai/active_model_serializers'
 require 'jinrai/active_record/result'
 require 'jinrai/config'
 require 'jinrai/configuration_methods'
