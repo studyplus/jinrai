@@ -1,9 +1,11 @@
-require "jinrai/active_model/serializer/collection_serializer"
-require "jinrai/active_model_serializers/adapter/json_api/pagination_cursors"
-require "jinrai/active_record/cursor"
-require "jinrai/active_record/result"
-require "jinrai/config"
+# frozen_string_literal:true
 
-module Jinrai
-  # Your code goes here...
+require 'jinrai/active_record/result'
+require 'jinrai/config'
+require 'jinrai/configuration_methods'
+
+ActiveSupport.on_load :active_record do
+  require 'jinrai/active_record/core'
+  ActiveRecord::Relation.send(:prepend, Jinrai::ActiveRecord::Result)
+  ActiveRecord::Base.send(:include, Jinrai::ActiveRecord::Core)
 end
