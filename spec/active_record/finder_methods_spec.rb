@@ -16,8 +16,8 @@ RSpec.describe Jinrai::ActiveRecord::FinderMethods do
           let(:users) { User.cursor }
           it "should be return correct 20 records" do
             expect(users.count).to eq 20
-            expect(users.first.id).to eq 100
-            expect(users.last.id).to eq 81
+            expect(users.first).to eq User.order(id: :desc)[0]
+            expect(users.last).to eq User.order(id: :desc)[19]
           end
         end
 
