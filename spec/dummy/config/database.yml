@@ -25,8 +25,10 @@ development:
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  <<: *default
-  database: dummy_test
+  adapter: mysql2
+  database: jinrai_test
+  username: travis
+  encoding: utf8
 
 # As with config/secrets.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
