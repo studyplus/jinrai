@@ -4,4 +4,4 @@ services:
   - mysql
 
 before_script:
-  - bundle exec rails db:create
+  - mysql -uroot -e "create database jinrai_test"
