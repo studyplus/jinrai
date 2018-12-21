@@ -9,3 +9,6 @@ ActiveSupport.on_load :active_record do
   ActiveRecord::Relation.send(:prepend, Jinrai::ActiveRecord::Result)
   ActiveRecord::Base.send(:include, Jinrai::ActiveRecord::Core)
 end
+
+module Jinrai
+end
