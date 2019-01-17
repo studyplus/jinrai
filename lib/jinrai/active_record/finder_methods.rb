@@ -58,7 +58,11 @@ module Jinrai
           sort_at ||= primary_key
           if cursor
             attributes = HashWithIndifferentAccess.new(decode_cursor(cursor))
-            id = find_by(attributes).id
+            id = if attributes.has_key?(:hashid)
+                   find_by_hashid(attributes[:hashid]).id
+                 else
+                   find_by(attributes).id
+                 end
 
             if sort_at != primary_key
               condition_1 = arel_table[sort_at].send(rank, attributes[sort_at])
