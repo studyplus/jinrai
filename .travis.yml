@@ -1,0 +1,7 @@
+language: ruby
+
+services:
+  - mysql
+
+before_script:
+  - mysql -uroot -e "create database jinrai_test"

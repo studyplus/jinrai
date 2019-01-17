@@ -10,3 +10,5 @@ vendor/bundle
 Gemfile.lock
 .ruby-version
 .DS_Store
+
+.idea/
