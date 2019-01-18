@@ -15,7 +15,6 @@ module Jinrai
           end
           Base64.urlsafe_encode64(attributes.join("_"))
         end
-        end
       end
 
       module ClassMethods
