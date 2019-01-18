@@ -9,7 +9,12 @@ module Jinrai
         include Jinrai::ConfigurationMethods
 
         def to_cursor
-          self.class.send(:encode_cursor, self)
+          attributes = self.class.default_cursor_format.map do |attr|
+            value = send(attr)
+            value.respond_to?(:iso8601) ? value.iso8601 : value
+          end
+          Base64.urlsafe_encode64(attributes.join("_"))
+        end
         end
       end
 
