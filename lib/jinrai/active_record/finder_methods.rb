@@ -9,11 +9,7 @@ module Jinrai
         include Jinrai::ConfigurationMethods
 
         def to_cursor
-          cursor_format = self.class.default_cursor_format
-          attributes = cursor_format.map do |attribute|
-            self.send(attribute)
-          end
-          Base64.urlsafe_encode64(attributes.join("_"))
+          self.class.send(:encode_cursor, self)
         end
       end
 
@@ -57,16 +53,11 @@ module Jinrai
         def cursoring(rank, rank_for_primary, cursor, sort_at)
           sort_at ||= primary_key
           if cursor
-            attributes = HashWithIndifferentAccess.new(decode_cursor(cursor))
-            id = if attributes.has_key?(:hashid)
-                   find_by_hashid(attributes[:hashid]).id
-                 else
-                   find_by(attributes).id
-                 end
+            attributes = HashWithIndifferentAccess.new(default_attributes_from_cursor.call(decode_cursor(cursor)))
 
             if sort_at != primary_key
               condition_1 = arel_table[sort_at].send(rank, attributes[sort_at])
-              condition_2 = arel_table.grouping(arel_table[sort_at].eq(attributes[sort_at]).and(arel_table[primary_key].send(rank_for_primary, id)))
+              condition_2 = arel_table.grouping(arel_table[sort_at].eq(attributes[sort_at]).and(arel_table[primary_key].send(rank_for_primary, attributes[primary_key])))
               relation = where(condition_1.or(condition_2))
             else
               relation = where(arel_table[primary_key].send(rank, id))
