@@ -6,10 +6,12 @@ module Jinrai
       include Jinrai::ConfigurationMethods
 
       def since_cursor
+        return unless first
         encode_cursor(first)
       end
 
       def till_cursor
+        return unless last
         encode_cursor(last)
       end
 

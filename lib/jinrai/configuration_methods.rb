@@ -8,17 +8,13 @@ module Jinrai #:nodoc:
         @_default_cursor_per = num.to_i
       end
 
-      def cursor_format(*attributes)
+      def cursor_format(*attributes, &block)
         @_default_cursor_format = attributes
+        @_default_attributes_from_cursor = block
       end
 
       def cursor_sort_order(rank)
         @_default_cursor_sort_order = rank.to_sym
-      end
-
-      def attributes_from_cursor(&block)
-        @_default_attributes_from_cursor = block
-        
       end
 
       def default_cursor_per

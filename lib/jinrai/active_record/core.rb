@@ -2,6 +2,9 @@ require 'jinrai/active_record/finder_methods'
 
 module Jinrai
   module ActiveRecord
+    RecordNotFound   = Class.new(::ActiveRecord::RecordNotFound)
+    StatementInvalid = Class.new(::ActiveRecord::StatementInvalid)
+
     module Core
       extend ActiveSupport::Concern
 

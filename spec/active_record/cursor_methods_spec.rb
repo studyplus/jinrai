@@ -2,9 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Jinrai::ActiveRecord::CursorMethods do
   before do
-    10.times do |i|
-      User.create!(name: "user%03d" % i)
-    end
+    create_list(:user, 10)
     User.cursor_per 10
     User.cursor_format :id, :name
   end
@@ -21,7 +19,7 @@ RSpec.describe Jinrai::ActiveRecord::CursorMethods do
     end
 
     it "should include correct value" do
-      is_expected.to eq attributes
+      is_expected.to match(attributes)
     end
   end
 
@@ -37,7 +35,7 @@ RSpec.describe Jinrai::ActiveRecord::CursorMethods do
     end
 
     it "should include correct value" do
-      is_expected.to eq attributes
+      is_expected.to match(attributes)
     end
   end
 end

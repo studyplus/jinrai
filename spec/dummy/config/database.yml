@@ -27,7 +27,7 @@ development:
 test:
   adapter: mysql2
   database: jinrai_test
-  username: travis
+  username: root
   encoding: utf8
 
 # As with config/secrets.yml, you never want to store sensitive information,

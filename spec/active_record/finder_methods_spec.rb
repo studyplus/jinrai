@@ -2,210 +2,116 @@ require "rails_helper"
 
 RSpec.describe Jinrai::ActiveRecord::FinderMethods do
   before do
-    User.cursor_per 20
-    1.upto(100) do |i|
-      User.create(id: i, name: "user#{'%03d' % i}", age: (102 - i)/2.to_i)
-    end
+    User.cursor_per 2
+    create(:user, age: 5)
+    create(:user, age: 4)
+    create(:user, age: 3)
+    create(:user, age: 2)
+    create(:user, age: 1)
   end
 
-
   describe ".cursor" do
-    context "sorted at primary key" do
-      context "sorted by desc" do
-        context "passed nothing argument" do
-          let(:users) { User.cursor }
-          it "should be return correct 20 records" do
-            expect(users.count).to eq 20
-            expect(users.first.id).to eq 100
-            expect(users.last.id).to eq 81
-          end
-        end
+    context "when sort at primary(id)" do
+      it "should return correct collection" do
+        users = User.cursor
+        _users = User.where(age: [1, 2]).order(id: :desc)
 
-        context "passed since cursor" do
-          let(:since) { User.find(81).to_cursor }
-          let(:users) { User.cursor(since: since) }
-          it "should be return correct 20 records" do
-            expect(users.count).to eq 20
-            expect(users.first.id).to eq 80
-            expect(users.last.id).to eq 61
-          end
-        end
+        expect(users.count).to eq(2)
+        expect(users).to contain_exactly(*_users)
 
-        context "passed till cursor" do
-          let(:till) { User.find(100).to_cursor }
-          let(:users) { User.cursor(till: till) }
-          before do
-          end
-          it "should be return correct 20 records" do
-            101.upto(110) do |i|
-              User.create(id: i, name: "user#{'%03d' % i}", age: (101 - i)/2.to_i)
-            end
-            expect(users.count).to eq 10
-            expect(users.first.id).to eq 110
-            expect(users.last.id).to eq 101
-          end
-        end
+        # steps for checking passing since parameter
+        since_cursor = users.till_cursor
 
-        context "passed since && till cursor" do
-          let(:since) { User.find(51).to_cursor }
-          let(:till) { User.find(40).to_cursor }
-          let(:users) { User.cursor(since: since, till: till) }
-          it "should be return correct 10 records" do
-            expect(users.count).to eq 10
-            expect(users.first.id).to eq 50
-            expect(users.last.id).to eq 41
-          end
-        end
-      end
+        users  = User.cursor(since: since_cursor)
+        _users = User.where(age: [3, 4]).order(id: :desc)
 
-      context "sorted by asc" do
-        before(:context) do
-          User.cursor_sort_order :asc
-        end
-        context "passed nothing argument" do
-          let(:users) { User.cursor }
-          it "should be return correct 20 records" do
-            expect(users.count).to eq 20
-            expect(users.first.id).to eq 1
-            expect(users.last.id).to eq 20
-          end
-        end
+        expect(users.count).to eq(2)
+        expect(users).to contain_exactly(*_users)
 
-        context "passed since cursor" do
-          let(:since) { User.find(10).to_cursor }
-          let(:users) { User.cursor(since: since) }
-          it "should be return correct 20 records" do
-            expect(users.count).to eq 20
-            expect(users.first.id).to eq 11
-            expect(users.last.id).to eq 30
-          end
-        end
+        # steops for checking passing till parameter
+        till_cursor = users.since_cursor
 
-        context "passed till cursor" do
-          let(:till) { User.find(11).to_cursor }
-          let(:users) { User.cursor(till: till) }
-          it "should be return correct 10 records" do
-            expect(users.count).to eq 10
-            expect(users.first.id).to eq 1
-            expect(users.last.id).to eq 10
-          end
-        end
+        users  = User.cursor(till: till_cursor)
+        _users = User.where(age: [1, 2]).order(id: :desc)
 
-        context "passed since && till cursor" do
-          let(:since) { User.find(10).to_cursor }
-          let(:till) { User.find(21).to_cursor }
-          let(:users) { User.cursor(since: since, till: till) }
-          it "should be return correct 10 records" do
-            expect(users.count).to eq 10
-            expect(users.first.id).to eq 11
-            expect(users.last.id).to eq 20
-          end
-        end
+        expect(users.count).to eq(2)
+        expect(users).to contain_exactly(*_users)
       end
     end
 
-    context "sort_at: age" do
-      before(:context) do
-        User.cursor_format :age, :id
+    context "when sort at NOT primary" do
+      it "should return correct collection" do
+        users  = User.cursor(sort_at: :age)
+        _users = User.where(age: [5, 4]).order(age: :desc)
+
+        expect(users.count).to eq(2)
+        expect(users).to contain_exactly(*_users)
+
+        # steps for checking passing since parameter
+        since_cursor = users.till_cursor
+
+        users = User.cursor(since: since_cursor, sort_at: :age)
+        _users = User.where(age: [3, 2]).order(age: :desc)
+
+        expect(users.count).to eq(2)
+        expect(users).to contain_exactly(*_users)
+
+        # steps for checing passing since parameter
+        till_cursor = users.since_cursor
+
+        users = User.cursor(till: till_cursor, sort_at: :age)
+        _users = User.where(age: [5, 4]).order(age: :desc)
+
+        expect(users.count).to eq(2)
+        expect(users).to contain_exactly(*_users)
       end
-      context "sorted by desc" do
-        before(:context) do
-          User.cursor_sort_order :desc
+    end
+
+    context "cursor has attribute which is inexistence in database" do
+      context "if not defined how to decode cursor to record attributes" do
+        before do
+          User.cursor_format :created_at_human, :id
         end
 
-        context "passed nothing cursor argument" do
-          let(:users) { User.cursor(sort_at: :age) }
-          it "should be return correct 20 records" do
-            expect(users.count).to eq 20
-            expect(users.first.age).to eq 50
-            expect(users.last.age).to eq 41
-            expect(users.first.id).to eq 1
-            expect(users.last.id).to eq 20
-          end
-        end
-
-        context "passed since cursor" do
-          let(:since) { User.find(20).to_cursor }
-          let(:users) { User.cursor(since: since, sort_at: :age) }
-          it "should be return correct 20 records" do
-            expect(users.count).to eq 20
-            expect(users.first.age).to eq 40
-            expect(users.last.age).to eq 31
-            expect(users.first.id).to eq 21
-            expect(users.last.id).to eq 40
-          end
-        end
-
-        context "passed till cursor" do
-          let(:till) { User.find(11).to_cursor }
-          let(:users) { User.cursor(till: till, sort_at: :age) }
-          before do
-          end
-          it "should be return correct 10 records" do
-            expect(users.count).to eq 10
-            expect(users.first.age).to eq 50
-            expect(users.last.age).to eq 46
-            expect(users.first.id).to eq 1
-            expect(users.last.id).to eq 10
-          end
-        end
-
-        context "passed since && till cursor" do
-          let(:since) { User.find(10).to_cursor }
-          let(:till) { User.find(21).to_cursor }
-          let(:users) { User.cursor(since: since, till: till, sort_at: :age) }
-          it "should be return correct 10 records" do
-            expect(users.count).to eq 10
-            expect(users.first.age).to eq 45
-            expect(users.last.age).to eq 41
-            expect(users.first.id).to eq 11
-            expect(users.last.id).to eq 20
-          end
+        it "should raise Jinrai::ActiveRecord::StatementInvalid" do
+          cursor = User.cursor.till_cursor
+          expect { User.cursor(since: cursor) }.to raise_error(Jinrai::ActiveRecord::StatementInvalid)
         end
       end
 
-      context "sorted by asc" do
-        before(:context) do
-          User.cursor_sort_order :asc
-        end
-        context "passed nothing argument" do
-          let(:users) { User.cursor }
-          it "should be return 20 records start with id: 1, and end with id: 20" do
-            expect(users.count).to eq 20
-            expect(users.first.id).to eq 1
-            expect(users.last.id).to eq 20
+      context "if defined how to decode cursor to record attributes but no record found" do
+        before do
+          User.cursor_format :created_at_human, :id do |attributes|
+            {
+              created_at: Time.zone.tomorrow,
+              id: attributes[:id]
+            }
           end
         end
 
-        context "passed since cursor" do
-          let(:since) { User.find(10).to_cursor }
-          let(:users) { User.cursor(since: since) }
-          it "should be return 20 records start with id: 11 and end with id: 30" do
-            expect(users.count).to eq 20
-            expect(users.first.id).to eq 11
-            expect(users.last.id).to eq 30
+        it "should raise Jinrai::ActiveRecord::RecordNotFound" do
+          cursor = User.cursor.till_cursor
+          expect { User.cursor(since: cursor) }.to raise_error(Jinrai::ActiveRecord::RecordNotFound)
+        end
+      end
+
+      context "if defined how to decode cursor to record attributes" do
+        before do
+          User.cursor_format :created_at_human, :id do |attributes|
+            {
+              created_at: Time.zone.parse(attributes[:created_at_human]),
+              id: attributes[:id]
+            }
           end
         end
 
-        context "passed till cursor" do
-          let(:till) { User.find(11).to_cursor }
-          let(:users) { User.cursor(till: till) }
-          it "should be return 20 records start with 1 and end with 10" do
-            expect(users.count).to eq 10
-            expect(users.first.id).to eq 1
-            expect(users.last.id).to eq 10
-          end
-        end
+        it "should raise Jinrai::ActiveRecord::RecordNotFound" do
+          cursor = User.cursor.till_cursor
+          users = User.cursor(since: cursor)
+          _users = User.where(age: [3, 4]).order(id: :desc)
 
-        context "passed since && till cursor" do
-          let(:since) { User.find(10).to_cursor }
-          let(:till) { User.find(21).to_cursor }
-          let(:users) { User.cursor(since: since, till: till) }
-          it "should be return 10 records start with id: 11, end with 20" do
-            expect(users.count).to eq 10
-            expect(users.first.id).to eq 11
-            expect(users.last.id).to eq 20
-          end
+          expect(users.count).to eq(2)
+          expect(users).to contain_exactly(*_users)
         end
       end
     end
