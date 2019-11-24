@@ -9,11 +9,13 @@ module Jinrai
         return unless first
         encode_cursor(first)
       end
+      alias prev_cursor since_cursor
 
       def till_cursor
         return unless last
         encode_cursor(last)
       end
+      alias next_cursor till_cursor
 
       def per(num = nil)
         num ||= default_cursor_per
