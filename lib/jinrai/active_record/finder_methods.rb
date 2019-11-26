@@ -49,7 +49,8 @@ module Jinrai
 
 
         def cursoring(rank, rank_for_primary, cursor, sort_at)
-          sort_at ||= primary_key
+
+          sort_at ||= default_cursor_sort_at
           if cursor
             attributes = default_attributes_from_cursor.call(decode_cursor(cursor))
             pointed = find_by!(attributes)

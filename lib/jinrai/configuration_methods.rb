@@ -13,6 +13,10 @@ module Jinrai #:nodoc:
         @_default_attributes_from_cursor = block
       end
 
+      def cursor_sort_at(key)
+        @_default_cursor_sort_at = key.to_sym
+      end
+
       def cursor_sort_order(rank)
         @_default_cursor_sort_order = rank.to_sym
       end
@@ -23,6 +27,10 @@ module Jinrai #:nodoc:
 
       def default_cursor_format
         @_default_cursor_format || Jinrai.config.default_cursor_format
+      end
+
+      def default_cursor_sort_at
+        @_default_cursor_sort_at || Jinrai.config.default_cursor_sort_at
       end
 
       def default_cursor_sort_order
