@@ -8,7 +8,7 @@ Jinraiはカーソルベースのページネータです。
 Jinrai.configure do |config|
   config.default_cursor_per = 20 #=> User.cursor.count == 20
   config.default_cursor_format = :id, :name #=> cursor format will be "#{user.id}_#{user.name}"
-  config.cursor_sort_order = :desc
+  config.default_cursor_sort_order = :desc
 end
 ```
 
@@ -19,7 +19,7 @@ end
 class User < ApplicationRecord
   cursor_per 100
   cursor_format :name, :age
-  cursor_order :asc # default: :desc
+  cursor_sort_order :asc # default: :desc
 end
 
 User.cursor.count #=> 100
