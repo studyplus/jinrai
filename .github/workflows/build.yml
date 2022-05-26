@@ -1,0 +1,28 @@
+name: build
+on: [push, pull_request]
+jobs:
+  rspec:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    services:
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: jinrai
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup
+        uses: ruby/setup-ruby@1
+        with:
+          ruby-version: [2.7, 3.0, 3.1]
+          bundler-cache: true
+      - name: bundle install
+        run: |
+          gem install bundler
+          bundle install --jobs 4 --retry 3
+      - name: RSpec
+        run: bundle exec rspec
