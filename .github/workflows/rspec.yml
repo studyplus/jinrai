@@ -1,5 +1,9 @@
-name: build
-on: [pull_request]
+name: rspec
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 jobs:
   rspec:
     runs-on: ubuntu-latest
