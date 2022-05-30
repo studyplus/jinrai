@@ -10,6 +10,7 @@ jobs:
     strategy:
       matrix:
         ruby: [2.7, 3.0, 3.1]
+        rails: [5.2, 6.1, 7.0]
     timeout-minutes: 5
     services:
       mysql:
@@ -27,7 +28,12 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
       - name: bundle install
-        run: bundle install --jobs 4 --retry 3
+        env:
+          MATRIX_RAILS_VERSION: ${{ matrix.rails }}
+        run: |
+          export BUNDLE_GEMFILE="${GITHUB_WORKSPACE}/gemfiles/rails_${MATRIX_RAILS_VERSION}.gemfile"
+          gem install bundler
+          bundle install --jobs 4 --retry 3
       - name: create database
         run: mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -e "create database jinrai_test"
       - name: RSpec
