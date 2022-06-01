@@ -3,9 +3,9 @@ module Jinrai
     module Result
       attr_writer :is_cursored
 
-      def initialize(*a)
+      def initialize(klass, **args)
         @is_cursored = false
-        super(*a)
+        super
       end
 
       def cursored?
