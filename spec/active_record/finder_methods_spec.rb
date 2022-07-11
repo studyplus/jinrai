@@ -2,6 +2,8 @@ require "rails_helper"
 
 RSpec.describe Jinrai::ActiveRecord::FinderMethods do
   before do
+    travel_to(Time.zone.now)
+
     User.cursor_per 2
     create(:user, age: 5)
     create(:user, age: 4)
@@ -97,6 +99,7 @@ RSpec.describe Jinrai::ActiveRecord::FinderMethods do
 
       context "if defined how to decode cursor to record attributes" do
         before do
+
           User.cursor_format :created_at_human, :id do |attributes|
             {
               created_at: Time.zone.parse(attributes[:created_at_human]),
