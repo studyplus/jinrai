@@ -15,6 +15,7 @@ jobs:
           - rails_5_2
           - rails_6_0
           - rails_6_1
+          - rails_7_0
         exclude:
           - ruby: 3.0
             gemfile: rails_5_2
