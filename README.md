@@ -71,6 +71,11 @@ $ gem install jinrai
 git clone git@github.com:YOUR_USERNAME/jinrai.git
 ```
 
+1. Create database
+```
+$ mysql --host 127.0.0.1  -uroot -e "create database jinrai_test"
+```
+
 1. setup dependencies via bundler:
 ```bash
 bundle install
@@ -83,7 +88,7 @@ bundle exec rspec
 
 1. Make your change, and write spec, make sure test pass:
 ```bash
-bandle exec rspec
+bundle exec rspec
 ```
 
 1. write a good commit message, push to your fork, then submit PullRequest.
