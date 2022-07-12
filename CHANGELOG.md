@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.0
+- Added
+  - Support Rails7.0
+- Breaking changes
+  - End of support for versions below Rails6
+
 ## 1.1.3
 - Setup GitHub Actions.
 - Support Ruby 3.x.
