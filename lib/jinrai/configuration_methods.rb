@@ -29,6 +29,10 @@ module Jinrai #:nodoc:
         @_default_cursor_sort_order || Jinrai.config.default_cursor_sort_order
       end
 
+      def default_iso8601_ndigits
+        @_default_iso8601_ndigits || Jinrai.config.default_iso8601_ndigits
+      end
+
       def default_attributes_from_cursor
         @_default_attributes_from_cursor || Jinrai.config.default_attributes_from_cursor
       end
