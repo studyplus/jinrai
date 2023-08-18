@@ -68,7 +68,7 @@ $ gem install jinrai
 ## Contributing
 1. Fork then clone this repo:
 ```bash
-git clone git@github.com:YOUR_USERNAME/jinrai.git
+git clone https://github.com/studyplus/jinrai.git
 ```
 
 1. Create database
