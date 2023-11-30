@@ -1,7 +1,8 @@
 require "rails_helper"
 
-RSpec.describe Jinrai::ActiveRecord::FinderMethods do
+RSpec.describe Jinrai::ActiveRecord::FinderMethodsWithMultipleOrders do
   before do
+    travel_to(Time.zone.now)
     User.cursor_per 3
 
     now = Time.zone.now
@@ -38,7 +39,6 @@ RSpec.describe Jinrai::ActiveRecord::FinderMethods do
 
         expect(users3.count).to eq 1
         expect(users3.ids).to eq _users3.ids
-
 
         # steps for checking passing till parameter
         till_cursor2 = users2.since_cursor
