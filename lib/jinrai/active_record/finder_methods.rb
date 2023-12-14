@@ -1,9 +1,11 @@
 require 'jinrai/active_record/cursor_methods'
+require 'jinrai/active_record/finder_methods_with_multiple_orders'
 
 module Jinrai
   module ActiveRecord #:nodoc:
     module FinderMethods
       extend ActiveSupport::Concern
+      include ::Jinrai::ActiveRecord::FinderMethodsWithMultipleOrders
 
       included do
         include Jinrai::ConfigurationMethods
@@ -11,42 +13,32 @@ module Jinrai
 
       module ClassMethods
         def cursor(**options)
-          sort_order = options[:sort_order] || default_cursor_sort_order
-          relation =
-            if sort_order == :desc
-              cursoring(:lt, :gt, options[:since], options[:sort_at]).cursoring(:gt, :lt, options[:till], options[:sort_at])
-            elsif sort_order == :asc
-              cursoring(:gt, :lt, options[:since], options[:sort_at]).cursoring(:lt, :gt, options[:till], options[:sort_at])
-            end
-          relation.extending_cursor
+          if options[:order].present?
+            cursor_with_multiple_orders(options)
+          else
+            original_cursor(options)
+          end
         end
 
         def after(cursor, **options)
-          sort_order = options[:sort_order] || default_cursor_sort_order
-          relation =
-            if sort_order == :desc
-              cursoring(:lt, :gt, cursor, options[:sort_at])
-            elsif sort_order == :asc
-              cursoring(:gt, :lt, cursor, options[:sort_at])
-            end
-          relation.extending_cursor
+          if options[:order].present?
+            after_with_multiple_orders(cursor, options)
+          else
+            original_after(cursor, options)
+          end
         end
 
         def before(cursor, **options)
-          sort_order = options[:sort_order] || default_cursor_sort_order
-          relation =
-            if sort_order == :desc
-              cursoring(:gt, :lt, cursor, options[:sort_at])
-            elsif sort_order == :asc
-              cursoring(:lt, :gt, cursor, options[:sort_at])
-            end
-          relation.extending_cursor
+          if options[:order].present?
+            before_with_multiple_orders(cursor, options)
+          else
+            original_before(cursor, options)
+          end
         end
 
         def extending_cursor
           extending { include Jinrai::ActiveRecord::CursorMethods }.per
         end
-
 
         def cursoring(rank, rank_for_primary, cursor, sort_at)
           sort_at ||= primary_key
@@ -74,6 +66,39 @@ module Jinrai
         end
 
         private
+
+        def original_cursor(options)
+          sort_order = options[:sort_order] || default_cursor_sort_order
+          relation =
+            if sort_order == :desc
+              cursoring(:lt, :gt, options[:since], options[:sort_at]).cursoring(:gt, :lt, options[:till], options[:sort_at])
+            elsif sort_order == :asc
+              cursoring(:gt, :lt, options[:since], options[:sort_at]).cursoring(:lt, :gt, options[:till], options[:sort_at])
+            end
+          relation.extending_cursor
+        end
+
+        def original_after(cursor, options)
+          sort_order = options[:sort_order] || default_cursor_sort_order
+          relation =
+            if sort_order == :desc
+              cursoring(:lt, :gt, cursor, options[:sort_at])
+            elsif sort_order == :asc
+              cursoring(:gt, :lt, cursor, options[:sort_at])
+            end
+          relation.extending_cursor
+        end
+
+        def original_before(cursor, options)
+          sort_order = options[:sort_order] || default_cursor_sort_order
+          relation =
+            if sort_order == :desc
+              cursoring(:gt, :lt, cursor, options[:sort_at])
+            elsif sort_order == :asc
+              cursoring(:lt, :gt, cursor, options[:sort_at])
+            end
+          relation.extending_cursor
+        end
 
         def decode_cursor(cursor)
           attributes = Base64.urlsafe_decode64(cursor).split("_")
