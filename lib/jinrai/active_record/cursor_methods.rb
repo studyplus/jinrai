@@ -30,7 +30,7 @@ module Jinrai
       def encode_cursor(record)
         attributes = default_cursor_format.map do |attr|
           value = record.send(attr)
-          value.respond_to?(:iso8601) ? value.iso8601 : value
+          value.respond_to?(:iso8601) ? value.iso8601(default_iso8601_ndigits) : value
         end
         Base64.urlsafe_encode64(attributes.join("_"))
       end
